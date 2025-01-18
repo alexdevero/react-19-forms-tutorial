@@ -18,63 +18,34 @@ type ErrorsState = Partial<{
 }>
 
 export const ReactForm: FC = () => {
-  const [errors, setErrors] = useState<ErrorsState>()
+  const [errors, setErrors] = useState<ErrorsState | null>(null)
 
   const [optimisticState, addOptimisticState] = useOptimistic<string[]>([])
 
-  const handleFormSubmit = async (previousState: FormSchema, formData: FormData) => {
+  const handleFormSubmit = async (previousState: string, formData: FormData) => {
     try {
+      setErrors(null)
+
       addOptimisticState(['Submitting form...'])
 
       const formDataEntries = Object.fromEntries(formData.entries())
       const result = formSchema.safeParse(formDataEntries)
 
       if (result.error) {
-        addOptimisticState(['Form submission failed!'])
-
         setErrors(result.error.flatten().fieldErrors)
 
-        // Keep the optimistic state for 1 second
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-
-        return {
-          firstName: '',
-          lastName: '',
-          note: '',
-          inviteCode: '',
-        }
+        return 'Form submission failed!'
       }
 
-      const submitResult = await slowFormRequest(result.data)
+      await slowFormRequest(result.data)
 
-      addOptimisticState(['Form submitted successfully!'])
-      // Keep the optimistic state for 1 second
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      return {
-        firstName: submitResult.firstName,
-        lastName: submitResult.lastName,
-        note: submitResult.note,
-        inviteCode: submitResult.inviteCode,
-      }
+      return 'Form submitted successfully!'
     } catch (error) {
-      addOptimisticState([`Form submission failed! ${JSON.stringify(error)}`])
-
-      return {
-        firstName: '',
-        lastName: '',
-        note: '',
-        inviteCode: '',
-      }
+      return `Form submission failed! ${JSON.stringify(error)}`
     }
   }
 
-  const [state, formAction, isPending] = useActionState(handleFormSubmit, {
-    firstName: '',
-    lastName: '',
-    note: '',
-    inviteCode: '',
-  })
+  const [state, formAction, isPending] = useActionState(handleFormSubmit, '')
 
   return (
     <div className="min-w-96">
@@ -91,6 +62,8 @@ export const ReactForm: FC = () => {
         {optimisticState.map((message) => (
           <div key={message}>{message}</div>
         ))}
+
+        {state && <div>{state}</div>}
 
         <Button disabled={isPending}>Submit</Button>
       </Form>
