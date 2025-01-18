@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useOptimistic, useState, type FC } from 'react'
+import { FormEvent, useActionState, useOptimistic, useState, type FC } from 'react'
 
 import { formSchema } from '@/constants/validation-schema'
 import { formFields } from '@/constants/form-fields'
@@ -47,11 +47,22 @@ export const ReactForm: FC = () => {
 
   const [state, formAction, isPending] = useActionState(handleFormSubmit, '')
 
+  const validateForm = (event: FormEvent<HTMLFormElement>) => {
+    const formData = new FormData(event.target as HTMLFormElement)
+    const formDataEntries = Object.fromEntries(formData.entries())
+    const result = formSchema.safeParse(formDataEntries)
+
+    if (result.error) {
+      event.preventDefault()
+      setErrors(result.error.flatten().fieldErrors)
+    }
+  }
+
   return (
     <div className="min-w-96">
       <h1 className="text-2xl font-bold text-center mb-4">React Form</h1>
 
-      <Form action={formAction}>
+      <Form action={formAction} onSubmit={validateForm}>
         {formFields.map((field) => (
           <FieldWrapper key={field.name} errorMessage={errors?.[field.name]?.[0]}>
             <Label htmlFor={field.name}>{field.label}</Label>
