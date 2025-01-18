@@ -20,13 +20,13 @@ type ErrorsState = Partial<{
 export const ReactForm: FC = () => {
   const [errors, setErrors] = useState<ErrorsState | null>(null)
 
-  const [optimisticState, addOptimisticState] = useOptimistic<string[]>([])
+  const [optimisticState, addOptimisticState] = useOptimistic<string>('')
 
   const handleFormSubmit = async (previousState: string, formData: FormData) => {
     try {
       setErrors(null)
 
-      addOptimisticState(['Submitting form...'])
+      addOptimisticState('Submitting form...')
 
       const formDataEntries = Object.fromEntries(formData.entries())
       const result = formSchema.safeParse(formDataEntries)
@@ -70,9 +70,7 @@ export const ReactForm: FC = () => {
           </FieldWrapper>
         ))}
 
-        {optimisticState.map((message) => (
-          <div key={message}>{message}</div>
-        ))}
+        {optimisticState && <div>{optimisticState}</div>}
 
         {state && <div>{state}</div>}
 

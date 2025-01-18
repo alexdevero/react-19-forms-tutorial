@@ -17,7 +17,7 @@ import { slowFormRequest } from '@/utils/slow-form-request'
 
 export const HookForm: FC = () => {
   const [isPending, startTransition] = useTransition()
-  const [optimisticState, addOptimisticState] = useOptimistic<string[]>([])
+  const [optimisticState, addOptimisticState] = useOptimistic<string>('')
   const {
     register,
     handleSubmit,
@@ -36,17 +36,17 @@ export const HookForm: FC = () => {
   const handleFormSubmit = (data: FormSchema) => {
     startTransition(async () => {
       try {
-        addOptimisticState(['Submitting form...'])
+        addOptimisticState('Submitting form...')
 
         await slowFormRequest(data)
 
-        addOptimisticState(['Form submitted successfully!'])
+        addOptimisticState('Form submitted successfully!')
         // Keep the optimistic state for 1 second
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
         reset()
       } catch (error) {
-        addOptimisticState([`Form submission failed! ${JSON.stringify(error)}`])
+        addOptimisticState(`Form submission failed! ${JSON.stringify(error)}`)
       }
     })
   }
@@ -63,9 +63,7 @@ export const HookForm: FC = () => {
           </FieldWrapper>
         ))}
 
-        {optimisticState.map((state, index) => (
-          <p key={index}>{state}</p>
-        ))}
+        {optimisticState && <div>{optimisticState}</div>}
 
         <Button disabled={isPending}>Submit</Button>
       </Form>
