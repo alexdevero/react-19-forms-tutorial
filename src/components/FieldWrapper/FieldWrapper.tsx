@@ -1,7 +1,13 @@
-import type { FC, PropsWithChildren, HTMLAttributes } from 'react'
+import type { FC, PropsWithChildren } from 'react'
+import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
 
-export const FieldWrapper: FC<PropsWithChildren<HTMLAttributes<HTMLDivElement>>> = ({ children, ...props }) => (
+type Props = {
+  errorMessage?: string
+}
+
+export const FieldWrapper: FC<PropsWithChildren<Props>> = ({ children, errorMessage, ...props }) => (
   <div className="flex flex-col gap-2" {...props}>
     {children}
+    {errorMessage && <ErrorMessage message={errorMessage} />}
   </div>
 )
