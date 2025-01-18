@@ -1,7 +1,10 @@
 {
-  "name": "react-19-forms",
+  "name": "react-19-forms-tutorial",
   "version": "0.1.0",
-  "private": true,
+  "author": {
+    "name": "Alex Devero",
+    "url": "https://devero.com"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
