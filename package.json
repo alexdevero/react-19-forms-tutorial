@@ -1,6 +1,7 @@
 {
   "name": "react-19-forms-tutorial",
   "version": "0.1.0",
+  "description": "React 19 forms tutorial on using useActionState and useFormStatus hooks",
   "author": {
     "name": "Alex Devero",
     "url": "https://devero.com"
